@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbo Bee - Instagram Downloader</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background: #1e293b; width: 100%; max-width: 480px; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; text-align: center; }
+        .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .logo svg { width: 40px; height: 40px; }
+        .logo h1 { font-size: 24px; color: #fbbf24; font-weight: 800; }
+        p.subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
+        .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; outline: none; }
+        input[type="text"]:focus { border-color: #fbbf24; }
+        button { background: #fbbf24; color: #0f172a; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #f59e0b; }
+        #result { margin-top: 20px; }
+        video { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #475569; }
+        .dl-btn { display: inline-block; width: 100%; background: #22c55e; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 12px; }
+        .dl-btn:hover { background: #16a34a; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">
+        <svg viewBox="0 0 24 24" fill="#fbbf24">
+            <path d="M12 2L15 8H9L12 2ZM12 22C6.477 22 2 17.523 2 12C2 9.5 2.9 7.2 4.4 5.4L7 9H17L19.6 5.4C21.1 7.2 22 9.5 22 12C22 17.523 17.523 22 12 22Z"/>
+        </svg>
+        <h1>Orbo Bee</h1>
+    </div>
+    <p class="subtitle">Instagram Reels & Videos Downloader</p>
+
+    <div class="input-group">
+        <input type="text" id="instaUrl" placeholder="Instagram Video/Reel link പേസ്റ്റ് ചെയ്യുക...">
+        <button onclick="downloadVideo()">Download Video</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function downloadVideo() {
+    const url = document.getElementById('instaUrl').value.trim();
+    const resultDiv = document.getElementById('result');
+
+    if (!url) {
+        alert('ദയവായി ഒരു ഇൻസ്റ്റാഗ്രാം ലിങ്ക് നൽകുക!');
+        return;
+    }
+
+    resultDiv.innerHTML = "<p style='color:#fbbf24;'>വീഡിയോ പ്രോസസ്സ് ചെയ്യുന്നു...</p>";
+
+    try {
+        // Render-ൽ ഹോസ്റ്റ് ചെയ്ത ശേഷമുള്ള നിങ്ങളുടെ backend URL ഇവിടെ വരും
+        const response = await fetch(`/download?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+
+        if (data && data.video_url) {
+            resultDiv.innerHTML = `
+                <video controls src="${data.video_url}"></video>
+                <a href="${data.video_url}" target="_blank" download class="dl-btn">വീഡിയോ സേവ് ചെയ്യുക</a>
+            `;
+        } else {
+            resultDiv.innerHTML = "<p style='color:#ef4444;'>വീഡിയോ കണ്ടെത്താനായില്ല. ലിങ്ക് പബ്ലിക് അക്കൗണ്ടിന്റേതാണോ എന്ന് ഉറപ്പാക്കുക.</p>";
+        }
+    } catch (error) {
+        resultDiv.innerHTML = "<p style='color:#ef4444;'>സെർവറുമായി കണക്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല. പിന്നീട് ശ്രമിക്കുക.</p>";
+    }
+}
+</script>
+
+</body>
+</html>
